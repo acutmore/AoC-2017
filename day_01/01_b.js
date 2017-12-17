@@ -1,0 +1,6 @@
+input.split('')
+    .map(v => Number.parseInt(v))
+    .map((a, i, l) => [a, l[(i + l.length / 2) % l.length]])
+    .filter(([a, b]) => a === b)
+    .map(([a]) => a)
+    .reduce((a, b) => a + b)
