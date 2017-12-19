@@ -10,28 +10,31 @@ const DIR = {
     W: { x: -1, y:  0 },
 };
 
-let position = startingPoint(grid);
-let direction = DIR.S
 const letters = [];
-const bound = grid.reduce((acc, line) => {
-    return acc + line.split('').reduce((acc, v) => {
-        return v === ' ' ? acc : acc + 1;
-    }, 0);
-}, 0);
+const characterCount = grid
+    .map(line => line.split('').reduce((acc, c) => /[A-Z]/.test(c) ? acc + 1 : acc, 0))
+    .reduce((acc, count) => acc + count, 0);
+const bound = 1e8;
 
-for (let i = 0; i < bound; i++) {
+let i = 0;
+let position = startingPoint(grid);
+let direction = DIR.S;
+for (; i <= bound; i++) {
     if (i === bound) {
         throw new Error('loop bound hit');
     }
     position = add(position, direction);
     const {x, y} = position;
     const n = grid[y][x];
-    if (n === undefined) {
-        console.log('undefined');
+    if (n === undefined || n === ' ') {
+        console.log('done');
         break;
     }
     if (/[A-Z]/.test(n)) {
         letters.push(n);
+        if (letters.length > characterCount) {
+            throw new Error('finding too many letters');
+        }
         continue;
     }
     if (n === '-' || n === '|') {
@@ -47,6 +50,7 @@ for (let i = 0; i < bound; i++) {
 }
 
 console.log(letters.join(''));
+console.log(i + 1);
 
 function startingPoint(grid) {
     return {
@@ -65,14 +69,6 @@ function add({ x, y }, { x: x2, y: y2 }) {
 }
 
 function findPath({position, comeFrom}) {
-    // N
-
-    // S
-
-    // E
-
-    // W
-
     return Object.keys(DIR)
         .map(k => DIR[k])
         .filter(({x, y}) => !(x === comeFrom.x && y === comeFrom.y))
